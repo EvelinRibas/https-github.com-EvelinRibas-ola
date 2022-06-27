@@ -1,6 +1,5 @@
 #include "builtin.h"
 #include "cache.h"
-#include "parse-options.h"
 #include "bisect.h"
 #include "refs.h"
 #include "dir.h"
@@ -20,18 +19,46 @@ static GIT_PATH_FUNC(git_path_bisect_names, "BISECT_NAMES")
 static GIT_PATH_FUNC(git_path_bisect_first_parent, "BISECT_FIRST_PARENT")
 static GIT_PATH_FUNC(git_path_bisect_run, "BISECT_RUN")
 
-static const char * const git_bisect_helper_usage[] = {
-	N_("git bisect--helper --bisect-reset [<commit>]"),
-	"git bisect--helper --bisect-terms [--term-good | --term-old | --term-bad | --term-new]",
-	N_("git bisect--helper --bisect-start [--term-{new,bad}=<term> --term-{old,good}=<term>]"
-					    " [--no-checkout] [--first-parent] [<bad> [<good>...]] [--] [<paths>...]"),
-	"git bisect--helper --bisect-next",
-	N_("git bisect--helper [--bisect-state] (bad|new) [<rev>]"),
-	N_("git bisect--helper [--bisect-state] (good|old) [<rev>...]"),
-	N_("git bisect--helper --bisect-replay <filename>"),
-	N_("git bisect--helper --bisect-skip [(<rev>|<range>)...]"),
-	"git bisect--helper --bisect-visualize",
-	N_("git bisect--helper --bisect-run <cmd>..."),
+static const char *bisect_usage =
+	N_("git bisect [help|start|bad|good|new|old|terms|skip|next|reset|"
+	   "visualize|view|replay|log|run]");
+
+static const char * const bisect_long_usage[] = {
+	N_("git bisect [help|start|bad|good|new|old|terms|skip|next|reset|"
+	   "visualize|view|replay|log|run]\n"
+	   "\n"
+	   "git bisect help\n"
+	   "\tprint this long help message.\n"
+	   "git bisect start [--term-{new,bad}=<term> "
+		"--term-{old,good}=<term>]\n"
+	   "\t	 [--no-checkout] [--first-parent] [<bad> [<good>...]] [--] "
+		"[<pathspec>...]\n"
+	   "\treset bisect state and start bisection.\n"
+	   "git bisect (bad|new) [<rev>]\n"
+	   "\tmark <rev> a known-bad revision/\n"
+	   "\t	a revision after change in a given property.\n"
+	   "git bisect (good|old) [<rev>...]\n"
+	   "\tmark <rev>... known-good revisions/\n"
+	   "\t	revisions before change in a given property.\n"
+	   "git bisect terms [--term-good | --term-bad]\n"
+	   "\tshow the terms used for old and new commits "
+		"(default: bad, good)\n"
+	   "git bisect skip [(<rev>|<range>)...]\n"
+	   "\tmark <rev>... untestable revisions.\n"
+	   "git bisect next\n"
+	   "\tfind next bisection to test and check it out.\n"
+	   "git bisect reset [<commit>]\n"
+	   "\tfinish bisection search and go back to commit.\n"
+	   "git bisect (visualize|view)\n"
+	   "\tshow bisect status in gitk.\n"
+	   "git bisect replay <logfile>\n"
+	   "\treplay bisection log.\n"
+	   "git bisect log\n"
+	   "\tshow bisect log.\n"
+	   "git bisect run <cmd>...\n"
+	   "\tuse <cmd>... to automatically bisect.\n"
+	   "\n"
+	   "Please use \"git help bisect\" to get the full man page."),
 	NULL
 };
 
@@ -1317,7 +1344,7 @@ int cmd_bisect__helper(int argc, const char **argv, const char *prefix)
 	struct bisect_terms terms = { .term_good = NULL, .term_bad = NULL };
 
 	argc = parse_options(argc, argv, prefix, options,
-			     git_bisect_helper_usage,
+			     bisect_long_usage,
 			     PARSE_OPT_KEEP_DASHDASH | PARSE_OPT_KEEP_UNKNOWN);
 
 	switch (cmdmode ? cmdmode : BISECT_STATE) {
@@ -1368,13 +1395,15 @@ int cmd_bisect__helper(int argc, const char **argv, const char *prefix)
 		res = bisect_run(&terms, argv, argc);
 		break;
 	case BISECT_STATE:
+		if (argc &&
+		    !file_is_not_empty(git_path_bisect_start()) &&
+		    !one_of(argv[0], "bad", "good", "new", "old", NULL))
+			usage(bisect_usage);
 		set_terms(&terms, "bad", "good");
 		get_terms(&terms);
 		if (!cmdmode &&
-		    (!argc || check_and_set_terms(&terms, argv[0]))) {
-			char *msg = xstrfmt(_("unknown command: '%s'"), argv[0]);
-			usage_msg_opt(msg, git_bisect_helper_usage, options);
-		}
+		    (!argc || check_and_set_terms(&terms, argv[0])))
+			usage(bisect_usage);
 		res = bisect_state(&terms, argv, argc);
 		break;
 	default:
