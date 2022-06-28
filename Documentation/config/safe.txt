@@ -32,3 +32,19 @@ Unix' simpler permission model, it can be a bit tricky to figure out why
 a directory is considered unsafe. To help with this, Git will provide
 more detailed information when the environment variable
 `GIT_TEST_DEBUG_UNSAFE_DIRECTORIES` is set to `true`.
++
+As explained, Git only allows you to access repositories owned by
+yourself, i.e. the user who is running Git, by default.  When Git
+is running as 'root' in a non Windows platform that provides sudo,
+however, git checks the SUDO_UID environment variable that sudo creates
+and will allow access to the uid recorded as its value in addition to
+the id from 'root'.
++
+This is to make it easy to perform a common sequence during installation
+"make && sudo make install".  A git process running under 'sudo' runs as
+'root' but the 'sudo' command exports the environment variable to record
+which id the original user has.
++
+If that is not what you would prefer and want git to only trust
+repositories that are owned by root instead, then you can remove
+the `SUDO_UID` variable from root's environment before invoking git.
