@@ -257,7 +257,7 @@ This commit is referred to as a "merge commit", or sometimes just a
 	<<def_SHA1,SHA-1>> of its contents. Consequently, an
 	object cannot be changed.
 
-[[def_object_database]]object database::
+[[def_object_database]]object database (ODB)::
 	Stores a set of "objects", and an individual <<def_object,object>> is
 	identified by its <<def_object_name,object name>>. The objects usually
 	live in `$GIT_DIR/objects/`.
