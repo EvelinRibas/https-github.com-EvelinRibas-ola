@@ -1072,6 +1072,9 @@ static int write_midx_bitmap(char *midx_name, unsigned char *midx_hash,
 	if (flags & MIDX_WRITE_BITMAP_HASH_CACHE)
 		options |= BITMAP_OPT_HASH_CACHE;
 
+	if (flags & MIDX_WRITE_BITMAP_LOOKUP_TABLE)
+		options |= BITMAP_OPT_LOOKUP_TABLE;
+
 	prepare_midx_packing_data(&pdata, ctx);
 
 	commits = find_commits_for_midx_bitmap(&commits_nr, refs_snapshot, ctx);
