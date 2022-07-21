@@ -213,6 +213,7 @@ gitformat-bundle                        developerinterfaces
 gitformat-chunk                         developerinterfaces
 gitformat-commit-graph                  developerinterfaces
 gitformat-index                         developerinterfaces
+gitformat-multi-pack-index              developerinterfaces
 gitformat-pack                          developerinterfaces
 gitformat-pack-cruft                    developerinterfaces
 gitformat-signature                     developerinterfaces
