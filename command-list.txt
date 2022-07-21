@@ -210,7 +210,6 @@ gitdiffcore                             guide
 giteveryday                             guide
 gitfaq                                  guide
 gitformat-bundle                        developerinterfaces
-gitformat-bundle                        developerinterfaces
 gitformat-commit-graph                  developerinterfaces
 gitglossary                             guide
 githooks                                userinterfaces
@@ -219,6 +218,10 @@ gitk                                    mainporcelain
 gitmailmap                              userinterfaces
 gitmodules                              userinterfaces
 gitnamespaces                           guide
+gitprotocol-capabilities                developerinterfaces
+gitprotocol-common                      developerinterfaces
+gitprotocol-pack                        developerinterfaces
+gitprotocol-v2                          developerinterfaces
 gitremote-helpers                       guide
 gitrepository-layout                    userinterfaces
 gitrevisions                            userinterfaces
