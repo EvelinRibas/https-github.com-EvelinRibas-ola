@@ -266,7 +266,7 @@ test_expect_success 'without subcommand does not take arguments' '
 	(
 		cd test &&
 		test_expect_code 129 git remote origin 2>err &&
-		grep "^error: Unknown subcommand:" err
+		grep "^error: unknown subcommand:" err
 	)
 '
 
