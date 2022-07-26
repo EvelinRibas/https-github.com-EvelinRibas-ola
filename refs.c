@@ -457,8 +457,8 @@ void normalize_glob_ref(struct string_list_item *item, const char *prefix,
 
 	if (prefix) {
 		strbuf_addstr(&normalized_pattern, prefix);
-	}
-	else if (!starts_with(pattern, "refs/"))
+	} else if (!starts_with(pattern, "refs/") &&
+		   strcmp(pattern, "HEAD"))
 		strbuf_addstr(&normalized_pattern, "refs/");
 	strbuf_addstr(&normalized_pattern, pattern);
 	strbuf_strip_suffix(&normalized_pattern, "/");
