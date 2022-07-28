@@ -160,6 +160,10 @@ effect to your index in a row.
 --no-rerere-autoupdate::
 	Allow the rerere mechanism to update the index with the
 	result of auto-conflict resolution if possible.
+	The `--no-rerere-autoupdate` option does not prevent the conflict
+	resolution, but prevents the index from being updated. This gives the
+	user a chance for a final sanity check before using linkgit:git-add[1]
+	to add the result.
 
 SEQUENCER SUBCOMMANDS
 ---------------------
