@@ -309,9 +309,10 @@ int write_packetized_from_fd_no_flush(int fd_in, int fd_out)
 	return err;
 }
 
-int write_packetized_from_buf_no_flush(const char *src_in, size_t len, int fd_out)
+int write_packetized_from_buf_no_flush_count(const char *src_in, size_t len,
+					     int fd_out, int *count_ptr)
 {
-	int err = 0;
+	int err = 0, count = 0;
 	size_t bytes_written = 0;
 	size_t bytes_to_write;
 
@@ -324,8 +325,16 @@ int write_packetized_from_buf_no_flush(const char *src_in, size_t len, int fd_ou
 			break;
 		err = packet_write_gently(fd_out, src_in + bytes_written, bytes_to_write);
 		bytes_written += bytes_to_write;
+		count++;
 	}
+	if (count_ptr)
+		*count_ptr = count;
 	return err;
+}
+
+int write_packetized_from_buf_no_flush(const char *src_in, size_t len, int fd_out)
+{
+	return write_packetized_from_buf_no_flush_count(src_in, len, fd_out, NULL);
 }
 
 static int get_packet_data(int fd, char **src_buf, size_t *src_size,
