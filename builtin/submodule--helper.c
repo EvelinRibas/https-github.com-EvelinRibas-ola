@@ -1557,16 +1557,24 @@ static void prepare_possible_alternates(const char *sm_name,
 	free(error_strategy);
 }
 
+static char *clone_submodule_sm_gitdir(const char *name)
+{
+	struct strbuf sb = STRBUF_INIT;
+	char *sm_gitdir;
+
+	submodule_name_to_gitdir(&sb, the_repository, name);
+	sm_gitdir = absolute_pathdup(sb.buf);
+	strbuf_release(&sb);
+
+	return sm_gitdir;
+}
+
 static int clone_submodule(struct module_clone_data *clone_data)
 {
-	char *p, *sm_gitdir;
+	char *p;
+	char *sm_gitdir = clone_submodule_sm_gitdir(clone_data->name);
 	char *sm_alternate = NULL, *error_strategy = NULL;
-	struct strbuf sb = STRBUF_INIT;
 	struct child_process cp = CHILD_PROCESS_INIT;
-
-	submodule_name_to_gitdir(&sb, the_repository, clone_data->name);
-	sm_gitdir = absolute_pathdup(sb.buf);
-	strbuf_reset(&sb);
 
 	if (!is_absolute_path(clone_data->path))
 		clone_data->path = xstrfmt("%s/%s", get_git_work_tree(),
@@ -1624,6 +1632,8 @@ static int clone_submodule(struct module_clone_data *clone_data)
 			die(_("clone of '%s' into submodule path '%s' failed"),
 			    clone_data->url, clone_data->path);
 	} else {
+		struct strbuf sb = STRBUF_INIT;
+
 		if (clone_data->require_init && !access(clone_data->path, X_OK) &&
 		    !is_empty_dir(clone_data->path))
 			die(_("directory not empty: '%s'"), clone_data->path);
@@ -1631,7 +1641,7 @@ static int clone_submodule(struct module_clone_data *clone_data)
 			die(_("could not create directory '%s'"), clone_data->path);
 		strbuf_addf(&sb, "%s/index", sm_gitdir);
 		unlink_or_warn(sb.buf);
-		strbuf_reset(&sb);
+		strbuf_release(&sb);
 	}
 
 	connect_work_tree_and_git_dir(clone_data->path, sm_gitdir, 0);
@@ -1653,7 +1663,6 @@ static int clone_submodule(struct module_clone_data *clone_data)
 	free(sm_alternate);
 	free(error_strategy);
 
-	strbuf_release(&sb);
 	free(sm_gitdir);
 	free(p);
 	return 0;
