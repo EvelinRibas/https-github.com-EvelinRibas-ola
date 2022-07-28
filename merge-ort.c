@@ -1002,6 +1002,7 @@ void merge_switch_to_result(struct merge_options *opt,
 		if (checkout(opt, head, result->tree)) {
 			/* failure to function */
 			result->clean = -1;
+			merge_finalize(opt, result);
 			return;
 		}
 
@@ -1010,6 +1011,7 @@ void merge_switch_to_result(struct merge_options *opt,
 						    &opti->conflicted)) {
 			/* failure to function */
 			result->clean = -1;
+			merge_finalize(opt, result);
 			return;
 		}
 	}
