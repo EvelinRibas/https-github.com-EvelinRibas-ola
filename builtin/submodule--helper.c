@@ -2383,6 +2383,8 @@ static void update_data_to_args(struct update_data *update_data, struct strvec *
 
 static int update_submodule(struct update_data *update_data)
 {
+	int ret = 1;
+
 	ensure_core_worktree(update_data->sm_path);
 
 	update_data->displaypath = get_submodule_displaypath(
@@ -2417,14 +2419,14 @@ static int update_submodule(struct update_data *update_data)
 		free(remote_ref);
 	}
 
-	if (!oideq(&update_data->oid, &update_data->suboid) || update_data->force)
+	if (!oideq(&update_data->oid, &update_data->suboid) || update_data->force) {
 		if (run_update_procedure(update_data))
-			return 1;
+			goto cleanup;
+	}
 
 	if (update_data->recursive) {
 		struct child_process cp = CHILD_PROCESS_INIT;
 		struct update_data next = *update_data;
-		int ret;
 
 		next.prefix = NULL;
 		oidcpy(&next.oid, null_oid());
@@ -2438,16 +2440,20 @@ static int update_submodule(struct update_data *update_data)
 		/* die() if child process die()'d */
 		ret = run_command(&cp);
 		if (!ret)
-			return 0;
+			goto cleanup;
 		die_message(_("Failed to recurse into submodule path '%s'"),
 			    update_data->displaypath);
-		if (ret == 128)
+		if (ret == 128) {
 			exit(ret);
-		else if (ret)
-			return 1;
+		} else if (ret) {
+			ret = 1;
+			goto cleanup;
+		}
 	}
 
-	return 0;
+	ret = 0;
+cleanup:
+	return ret;
 }
 
 static int update_submodules(struct update_data *update_data)
