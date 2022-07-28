@@ -4635,6 +4635,7 @@ void merge_switch_to_result(struct merge_options *opt,
 		if (checkout(opt, head, result->tree)) {
 			/* failure to function */
 			result->clean = -1;
+			merge_finalize(opt, result);
 			return;
 		}
 		trace2_region_leave("merge", "checkout", opt->repo);
@@ -4645,6 +4646,7 @@ void merge_switch_to_result(struct merge_options *opt,
 			/* failure to function */
 			opt->priv = NULL;
 			result->clean = -1;
+			merge_finalize(opt, result);
 			return;
 		}
 		opt->priv = NULL;
