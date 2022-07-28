@@ -1568,12 +1568,11 @@ static int clone_submodule(struct module_clone_data *clone_data)
 	sm_gitdir = absolute_pathdup(sb.buf);
 	strbuf_reset(&sb);
 
-	if (!is_absolute_path(clone_data->path)) {
-		strbuf_addf(&sb, "%s/%s", get_git_work_tree(), clone_data->path);
-		clone_data->path = strbuf_detach(&sb, NULL);
-	} else {
+	if (!is_absolute_path(clone_data->path))
+		clone_data->path = xstrfmt("%s/%s", get_git_work_tree(),
+					   clone_data->path);
+	else
 		clone_data->path = xstrdup(clone_data->path);
-	}
 
 	if (validate_submodule_git_dir(sm_gitdir, clone_data->name) < 0)
 		die(_("refusing to create/use '%s' in another submodule's "
