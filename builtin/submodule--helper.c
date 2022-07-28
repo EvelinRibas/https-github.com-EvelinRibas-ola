@@ -2460,10 +2460,11 @@ static int update_submodule(struct update_data *update_data,
 			    int *must_die_on_failure)
 {
 	int ret = 1;
+	char *to_free, *restore = update_data->displaypath;
 
 	ensure_core_worktree(update_data->sm_path);
 
-	update_data->displaypath = get_submodule_displaypath(
+	update_data->displaypath = to_free = get_submodule_displaypath(
 		update_data->sm_path, update_data->prefix);
 
 	determine_submodule_update_strategy(the_repository, update_data->just_cloned,
@@ -2537,6 +2538,9 @@ static int update_submodule(struct update_data *update_data,
 
 	ret = 0;
 cleanup:
+	free(to_free);
+	update_data->displaypath = restore;
+
 	return ret;
 }
 
