@@ -1,4 +1,17 @@
-= Cruft packs
+gitformat-pack-cruft(5)
+=======================
+
+NAME
+----
+gitformat-pack-cruft - The cruft pack file format
+
+SYNOPSIS
+--------
+[verse]
+$GIT_DIR/objects/pack/pack-*.mtimes
+
+DESCRIPTION
+-----------
 
 The cruft packs feature offer an alternative to Git's traditional mechanism of
 removing unreachable objects. This document provides an overview of Git's
@@ -10,10 +23,11 @@ same.
 To remove unreachable objects from your repository, Git offers `git repack -Ad`
 (see linkgit:git-repack[1]). Quoting from the documentation:
 
-[quote]
+----
 [...] unreachable objects in a previous pack become loose, unpacked objects,
 instead of being left in the old pack. [...] loose unreachable objects will be
 pruned according to normal expiry rules with the next 'git gc' invocation.
+----
 
 Unreachable objects aren't removed immediately, since doing so could race with
 an incoming push which may reference an object which is about to be deleted.
@@ -121,3 +135,7 @@ which aren't already stored in an earlier cruft pack) is significantly more
 complicated to construct, and so aren't pursued here. The obvious drawback to
 the current implementation is that the entire cruft pack must be re-written from
 scratch.
+
+GIT
+---
+Part of the linkgit:git[1] suite
